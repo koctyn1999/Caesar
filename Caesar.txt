@@ -1,0 +1,200 @@
+#include <ctype.h> 
+#include <string> 
+#include "caesar.h" 
+#include <iostream> 
+using namespace std; 
+
+string Caesar::Encrypt(const string Text)
+{ 
+Encrypt_Error(Text); 
+int j = 0; 
+text = Deleted(Text); 
+text = Up(text); 
+while (text[j] != '\0') 
+{ 
+if (text[j] + Key>'Z') 
+text[j] = text[j] - (m - Key); 
+else 
+text[j] = text[j] + Key; 
+j++; 
+} 
+return string(text); 
+} 
+
+string Caesar::Decrypt(const string Text)
+{ 
+Decrypt_Error(Text); 
+int j = 0; 
+text = Text; 
+while (text[j] != '\0') 
+{ 
+if ((text[j] - Key)<'A') 
+text[j] = text[j] + (m - Key); 
+else 
+text[j] = text[j] - Key; 
+j++; 
+} 
+return string(text); 
+} 
+
+void Caesar::Encrypt_Error(string Text)
+{ 
+int j = 0; 
+while (Text[j] != '\0') 
+{ 
+if ((Text[j] >= '0') && (Text[j] <= '9')) 
+throw 2; 
+j++; 
+} 
+j = 0; 
+while (Text[j] != '\0') 
+{ 
+if (((Text[j] >= 'À') && (Text[j] <= 'ÿ')) | (Text[j] <= '¨') | (Text[j] <= '¸')) 
+throw 3; 
+j++; 
+} 
+} 
+
+void Caesar::Decrypt_Error(const string Text)
+{ 
+int j = 0; 
+while (Text[j] != '\0') 
+{ 
+if ((Text[j] >= 'A') && (Text[j] <= 'Z')) 
+{ 
+} 
+else 
+throw 4; 
+j++; 
+} 
+} 
+
+string Caesar::Deleted(string Text)
+{ 
+int j = 0; 
+text = Text; 
+while (text[j] != '\0') 
+{ 
+if (((text[j] >= 'A') && (text[j] <= 'Z')) | ((text[j] >= 'a') && (text[j] <= 'z'))) 
+{ 
+j++; 
+} 
+else 
+{ 
+text.erase(j, 1); 
+} 
+} 
+return string(text); 
+} 
+
+string Caesar::Up(string text)
+{ 
+int j = 0; 
+while (text[j] != '\0') 
+{ 
+text[j] = toupper(text[j]); 
+j++; 
+} 
+return string(text); 
+}
+
+
+#pragma once
+#include <string>
+using namespace std;
+class Caesar
+{
+public:
+	Caesar(const int key) :Key(key) {}
+	string Encrypt(const string Text);
+	string Decrypt(const string Text);
+private:
+	string text;
+	int Key, m = 26;
+	void Encrypt_Error(const string Text);
+	void Decrypt_Error(const string Text);
+	string Deleted(string Text);
+	string Up(string text);
+};
+
+
+
+#include <iostream>
+#include <stdexcept>
+#include <Windows.h>
+#include "caesar.h"
+#include <string>
+using namespace std;
+int main()
+{
+	SetConsoleCP(1251);
+	string k, input;
+	unsigned int key, m = 26;
+	int i = 0, l = 0;
+	char answer = '1';
+	cout << "Input key." << endl;
+	cin >> key;
+	try
+	{
+		if ((key > m) | (key <= 0))
+			throw 1;
+		while(answer != '0')
+		{
+			cout << "Input text." << endl;
+			cin.ignore();
+			getline(cin, k);
+			cout << "Do you want to encrypt or decrypt the text?" << endl;
+			cout << "Encrypt - 1. Decrypt - 2. Exit - 0" << endl;
+			cin >> answer;
+			if (answer == '1')
+			{
+				Caesar x(key);
+				input = x.Encrypt(k);
+			}
+			else if (answer == '2')
+			{
+				Caesar x(key);
+				input = x.Decrypt(k);
+			}
+			else if (answer == '0')
+			{
+			}
+			else
+				throw 5;
+			if (answer != '0')
+				cout << input << endl;
+		}
+	}
+	catch (int error)
+	{
+		if (error == 1)
+		{
+			cout << "Key input error." << endl;
+			return 1;
+		}
+		else
+			if (error == 2)
+			{
+				cout << "Error. Cannot enter numbers." << endl;
+				return 2;
+			}
+
+			else
+				if (error == 3)
+				{
+					cout << "Error. You cannot enter non - English characters." << endl;
+					return 3;
+				}
+				else
+					if (error == 4)
+					{
+						cout << "Error." << endl;
+						return 4;
+					}
+		{
+			cout << "The answer to the question is incorrect." << endl;
+			return 5;
+		}
+	}
+	return 0;
+}
